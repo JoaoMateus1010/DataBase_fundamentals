@@ -1,0 +1,17 @@
+CREATE TABLE Pessoa 				(id SERIAL PRIMARY KEY, nome VARCHAR(50),data_nascimento DATE,sexo VARCHAR(1),email VARCHAR(50),senha VARCHAR(50));
+CREATE TABLE Low_lvl				(id INTEGER PRIMARY KEY,empresa VARCHAR(50),formacao_tecnica VARCHAR(50),FOREIGN KEY(id) REFERENCES Pessoa(id));
+CREATE TABLE High_lvl				(id INTEGER PRIMARY KEY,interesse VARCHAR(50),FOREIGN KEY(id) REFERENCES Pessoa(id));
+CREATE TABLE Projeto 				(id SERIAL PRIMARY KEY, nome VARCHAR(50),data_criacao DATE,descricao TEXT);
+CREATE TABLE Projeto_Low_lvl 		(id INTEGER,id_criador_projeto_low INTEGER,vcc_info REAL,num_pin_out_info INTEGER,num_pin_in_info INTEGER,gnd_info REAL,FOREIGN KEY (id) REFERENCES Projeto(id),FOREIGN KEY (id_criador_projeto_low) REFERENCES Low_lvl(id));
+CREATE TABLE Projeto_High_lvl 		(id INTEGER,id_criador_projeto_high INTEGER,num_output INTEGER,num_input INTEGER,FOREIGN KEY (id) REFERENCES Projeto(id),FOREIGN KEY (id_criador_projeto_high) REFERENCES High_lvl(id));
+CREATE TABLE Component				(id SERIAL PRIMARY KEY, id_criador_componente INTEGER,nome VARCHAR(50),fabrica VARCHAR(50),i_max REAL,i_min REAL,v_max REAL,v_min REAL,FOREIGN KEY (id_criador_componente) REFERENCES Low_lvl(id));
+CREATE TABLE High_usa_Componente	(id_high_lvl INTEGER,id_componente INTEGER,FOREIGN KEY (id_high_lvl) REFERENCES High_lvl(id),FOREIGN KEY (id_componente) REFERENCES Component(id));
+CREATE TABLE relation_in_out		(id INTEGER, expression_input_pins VARCHAR(100),num_pin_out_number INTEGER,num_pin_out_value REAL,FOREIGN KEY (id) REFERENCES Component(id));
+CREATE TABLE tem_componentes		(id_projeto INTEGER,id_componente INTEGER, FOREIGN KEY (id_projeto) REFERENCES Projeto(id), FOREIGN KEY (id_componente) REFERENCES Component(id));
+CREATE TABLE outputs				(id INTEGER,output_pin_number INTEGER, pin_out_value REAL,FOREIGN KEY (id) REFERENCES Component(id));
+CREATE TABLE inputs					(id INTEGER,input_pin_number INTEGER, pin_in_value REAL,FOREIGN KEY (id) REFERENCES Component(id));
+CREATE TABLE Resistor				(id INTEGER,resistencia REAL,tolerancia REAL, FOREIGN KEY (id) REFERENCES Component(id));
+CREATE TABLE Capacitor				(id INTEGER,capacitancia REAL, FOREIGN KEY (id) REFERENCES Component(id));
+CREATE TABLE Diode					(id INTEGER,tipo VARCHAR(10),v_sat REAL,v_br REAL, FOREIGN KEY (id) REFERENCES Component(id));
+CREATE TABLE Transistor				(id INTEGER,tipo VARCHAR(3),beta REAL,alpha REAL, FOREIGN KEY (id) REFERENCES Component(id));
+CREATE TABLE Ligacao				(pin_left INTEGER,pin_right INTEGER,projeto_pai INTEGER,componente_left INTEGER,componente_right INTEGER,FOREIGN KEY (projeto_pai) REFERENCES Projeto(id),FOREIGN KEY (componente_left) REFERENCES Component(id), FOREIGN KEY (componente_right) REFERENCES Component(id), PRIMARY KEY (componente_left,componente_right,pin_left,pin_right));
